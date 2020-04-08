@@ -38,25 +38,22 @@ class PostGrid extends Widget_Base {
 
     private function get_post_types() {
         $options = [];
-        $exclude = ['attachment', 'elementor_library']; // excluded post types
+        $exclude = ['attachment', 'elementor_library'];
 
         $args = [
             'public' => true,
         ];
 
         foreach (get_post_types($args, 'objects') as $post_type) {
-            // Check if post type name exists.
             if (!isset($post_type->name)) {
                 continue;
             }
 
-            // Check if post type label exists.
             if (!isset($post_type->label)) {
                 continue;
             }
 
-            // Check if post type is excluded.
-            if (in_array($post_type->name, $exclude) === true) {
+            if (in_array($post_type->name, $exclude)) {
                 continue;
             }
 
@@ -64,6 +61,12 @@ class PostGrid extends Widget_Base {
         }
 
         return $options;
+    }
+
+    private function get_image_sizes() {
+        $image_sizes = get_intermediate_image_sizes();
+
+        return array_combine($image_sizes, $image_sizes);
     }
 
     protected function _register_controls() {
@@ -114,28 +117,12 @@ class PostGrid extends Widget_Base {
         );
 
         $this->add_control(
-            'fields',
+            'image_size',
             [
-                'label' => __('List', Language::TEXT_DOMAIN),
-                'type' => Controls_Manager::REPEATER,
-                'fields' => [
-                    [
-                        'name' => 'text',
-                        'label' => __('Text', Language::TEXT_DOMAIN),
-                        'type' => Controls_Manager::TEXT,
-                        'placeholder' => __('List Item', Language::TEXT_DOMAIN),
-                        'default' => __('List Item', Language::TEXT_DOMAIN),
-                        'dynamic' => [
-                            'active' => true
-                        ]
-                    ]
-                ],
-                'default' => [
-                    [
-                        'text' => __('List Item #1', Language::TEXT_DOMAIN)
-                    ]
-                ],
-                'title_field' => '{{{ text }}}',
+                'label' => __('Image size', Language::TEXT_DOMAIN),
+                'type' => Controls_Manager::SELECT,
+                'options' => $this->get_image_sizes(),
+                'default' => 'post-thumbnail',
             ]
         );
 
@@ -143,7 +130,7 @@ class PostGrid extends Widget_Base {
     }
 
     protected function grid_style_section() {
-        // Tab.
+        // Tab
         $this->start_controls_section(
             'section_grid_style',
             [
@@ -210,7 +197,7 @@ class PostGrid extends Widget_Base {
                 ],
                 'selectors' => [
                     '{{WRAPPER}} .cca-post-grid' => 'row-gap: {{SIZE}}{{UNIT}};',
-                ],
+                ]
             ]
         );
 
@@ -230,19 +217,10 @@ class PostGrid extends Widget_Base {
         );
     ?>
         <section <?= $this->get_render_attribute_string('wrapper'); ?>>
-            <?php
-            foreach ($items as $item):
-                $custom_fields = [];
-                foreach ($settings['fields'] as $index => $field): ?>
-                    <?php
-                    $string = $field['__dynamic__']['text'];
-                    preg_match('/(%3A(\w*)%22%7D)/', $string, $re);
-                    $custom_fields[$field['name']] = get_field($re[2], $item->ID);
-                endforeach;
-            ?>
+            <?php foreach ($items as $item): ?>
             <article>
                 <figure>
-                    <?= get_the_post_thumbnail($item->ID) ?>
+                    <img src="<?= get_the_post_thumbnail_url($item->ID, $settings['image_size']) ?>" alt="<?= $item->post_title ?>">
                 </figure>
                 <div>
                     <?= $item->post_title ?>
@@ -250,17 +228,8 @@ class PostGrid extends Widget_Base {
                 <div>
                     <?= $item->post_content ?>
                 </div>
-                <div>
-                    <ul>
-                        <?php foreach ($custom_fields as $name => $value): ?>
-                        <li><?= $name ?>; <?= $value ?></li>
-                        <?php endforeach; ?>
-                    </ul>
-                    <?php var_dump($custom_fields); ?>
-                </div>
             </article>
             <?php endforeach; ?>
-            <pre><?php var_dump($items); ?></pre>
         </section>
     <?php
     }
