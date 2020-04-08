@@ -9,23 +9,23 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly.
 }
 
-class PostGrid extends Widget_Base {
+class FilteredGrid extends Widget_Base {
     public function __construct($data = [], $args = null) {
         parent::__construct($data, $args);
 
-        wp_register_style('cca-post-grid', plugins_url('../assets/css/post-grid.css', __DIR__));
+        wp_register_style('cca-filtered-grid', plugins_url('../assets/css/filtered-grid.css', __DIR__));
     }
 
     public function get_name() {
-        return 'post_grid';
+        return 'filtered_grid';
     }
 
     public function get_title() {
-        return __('Post Grid', Language::TEXT_DOMAIN);
+        return __('Filtered Grid', Language::TEXT_DOMAIN);
     }
 
     public function get_icon() {
-        return 'eicon-posts-grid';
+        return 'eicon-filter';
     }
 
     public function get_categories() {
@@ -33,7 +33,7 @@ class PostGrid extends Widget_Base {
     }
 
     public function get_style_depends() {
-        return ['cca-post-grid'];
+        return ['cca-filtered-grid'];
     }
 
     private function get_post_types() {
@@ -212,10 +212,10 @@ class PostGrid extends Widget_Base {
         $this->add_render_attribute(
             'wrapper',
             [
-                'class' => ['cca-post-grid', $settings['_css_classes']]
+                'class' => ['cca-filtered-grid', $settings['_css_classes']]
             ]
         );
-    ?>
+        ?>
         <section <?= $this->get_render_attribute_string('wrapper'); ?>>
             <?php
             foreach ($items as $item):
@@ -236,6 +236,6 @@ class PostGrid extends Widget_Base {
             </article>
             <?php endforeach; ?>
         </section>
-    <?php
+        <?php
     }
 }
