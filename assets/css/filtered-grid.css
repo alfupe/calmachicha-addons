@@ -1,3 +1,114 @@
+.cca-filtered-grid {
+  --gutter: 30px;
+}
 
+.cca-filtered-grid__image {
+  position: relative;
+  overflow: hidden;
+  height: 365px;
+}
+
+.cca-filtered-grid__image::before {
+  content: "";
+  background-color: rgba(0, 0, 0, 0.3);
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  transition: background-color 0.15s ease;
+}
+
+.cca-filtered-grid__image:hover::before {
+  background: rgba(0, 0, 0, 0.5) url(../img/icono-fa.png) center center no-repeat;
+  background-size: 64px;
+}
+
+.cca-filtered-grid__image img {
+  width: 100%;
+  height: 100% !important;
+  max-width: initial !important;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: all 1s linear;
+}
+
+.cca-filtered-grid__image:hover img {
+  height: 120% !important;
+  transition: all 4s linear;
+}
+
+.cca-filtered-grid__item {
+  width: calc(33.3333% - var(--gutter));
+  margin-bottom: 30px;
+}
+
+.cca-filtered-grid__contents {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: #414141;
+  padding-top: 15px;
+}
+
+.cca-filtered-grid__title {
+  font-family: Montserrat, sans-serif;
+  font-weight: 500;
+  font-size: 30px;
+  color: #000000;
+  letter-spacing: -2px;
+  line-height: 1;
+  margin-bottom: 15px;
+}
+
+.cca-filtered-grid__description {
+  font-family: Lato, sans-serif;
+  font-size: 16px;
+  color: #000000;
+  font-weight: 300;
+  min-height: 80px;
+}
+
+@media (min-width: 630px) and (max-width: 991px) {
+  .cca-filtered-grid__item {
+    width: calc(50% - var(--gutter));
+  }
+}
+@media (max-width: 629px) {
+  .cca-filtered-grid__item {
+    width: 100%;
+  }
+}
+/* ============ FILTERS =========== */
+.cca-filtered-grid-filters {
+  margin-bottom: 60px;
+}
+
+.cca-filtered-grid-filters__filter {
+  display: inline-block;
+  padding: 6px 15px 3px;
+  border: 1px solid black;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  font-family: Montserrat, sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.cca-filtered-grid-filters__filter:not(.cca-filtered-grid-filters__filter--is-active):hover {
+  color: #000000;
+  border-color: #000000;
+}
+
+.cca-filtered-grid-filters__filter--is-active {
+  color: #ffffff;
+  background-color: #000000;
+  border-color: #000000;
+}
+
+/* ============ END FILTERS =========== */
 
 /*# sourceMappingURL=filtered-grid.css.map */

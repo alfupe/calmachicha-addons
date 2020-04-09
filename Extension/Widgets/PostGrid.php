@@ -17,7 +17,7 @@ class PostGrid extends Widget_Base {
     }
 
     public function get_name() {
-        return 'post_grid';
+        return 'post-grid';
     }
 
     public function get_title() {

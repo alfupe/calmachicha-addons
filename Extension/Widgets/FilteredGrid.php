@@ -14,10 +14,13 @@ class FilteredGrid extends Widget_Base {
         parent::__construct($data, $args);
 
         wp_register_style('cca-filtered-grid', plugins_url('../assets/css/filtered-grid.css', __DIR__));
+        wp_register_script('images-loaded', plugins_url('../assets/js/imagesloaded.pkgd.min.js', __DIR__), ['elementor-frontend'], false, true);
+        wp_register_script('isotope', plugins_url('../assets/js/isotope.pkgd.min.js', __DIR__), ['elementor-frontend', 'images-loaded'], false, true);
+        wp_register_script('cca-filtered-grid', plugins_url('../assets/js/filtered-grid.js', __DIR__), ['elementor-frontend', 'isotope'], false, true);
     }
 
     public function get_name() {
-        return 'filtered_grid';
+        return 'cca-filtered-grid';
     }
 
     public function get_title() {
@@ -25,7 +28,7 @@ class FilteredGrid extends Widget_Base {
     }
 
     public function get_icon() {
-        return 'eicon-filter';
+        return 'eicon-posts-masonry';
     }
 
     public function get_categories() {
@@ -34,6 +37,10 @@ class FilteredGrid extends Widget_Base {
 
     public function get_style_depends() {
         return ['cca-filtered-grid'];
+    }
+
+    public function get_script_depends() {
+        return ['images-loaded', 'isotope', 'cca-filtered-grid'];
     }
 
     private function get_post_types() {
@@ -139,11 +146,10 @@ class FilteredGrid extends Widget_Base {
             ]
         );
 
-        // Columns margin.
-        $this->add_responsive_control(
-            'grid_style_columns_gap',
+        $this->add_control(
+            'gutter',
             [
-                'label' => __('Columns gap', Language::TEXT_DOMAIN),
+                'label' => __('Gutter', Language::TEXT_DOMAIN),
                 'type' => Controls_Manager::SLIDER,
                 'range' => [
                     'px' => [
@@ -151,53 +157,11 @@ class FilteredGrid extends Widget_Base {
                         'max' => 100,
                     ],
                 ],
-                'devices' => ['desktop', 'tablet', 'mobile'],
-                'desktop_default' => [
+                'default' => [
+                    'unit' => 'px',
                     'size' => 30,
-                    'unit' => 'px',
                 ],
-                'tablet_default' => [
-                    'size' => 20,
-                    'unit' => 'px',
-                ],
-                'mobile_default' => [
-                    'size' => 10,
-                    'unit' => 'px',
-                ],
-                'selectors' => [
-                    '{{WRAPPER}} .cca-post-grid' => 'column-gap: {{SIZE}}{{UNIT}};',
-                ],
-            ]
-        );
-
-        // Row margin.
-        $this->add_responsive_control(
-            'grid_style_rows_gap',
-            [
-                'label' => __('Rows gap', Language::TEXT_DOMAIN),
-                'type' => Controls_Manager::SLIDER,
-                'range' => [
-                    'px' => [
-                        'min' => 0,
-                        'max' => 100,
-                    ],
-                ],
-                'devices' => ['desktop', 'tablet', 'mobile'],
-                'desktop_default' => [
-                    'size' => 30,
-                    'unit' => 'px',
-                ],
-                'tablet_default' => [
-                    'size' => 20,
-                    'unit' => 'px',
-                ],
-                'mobile_default' => [
-                    'size' => 10,
-                    'unit' => 'px',
-                ],
-                'selectors' => [
-                    '{{WRAPPER}} .cca-post-grid' => 'row-gap: {{SIZE}}{{UNIT}};',
-                ]
+                'frontend_available' => true, // this makes available in JS https://github.com/elementor/elementor/issues/8258#issuecomment-499550103
             ]
         );
 
@@ -215,26 +179,53 @@ class FilteredGrid extends Widget_Base {
                 'class' => ['cca-filtered-grid', $settings['_css_classes']]
             ]
         );
+        $filters = get_terms([
+            'taxonomy' => 'cat_portfolio',
+            'hide_empty' => false
+        ]);
         ?>
-        <section <?= $this->get_render_attribute_string('wrapper'); ?>>
-            <?php
-            foreach ($items as $item):
-                $item_image = get_the_post_thumbnail_url($item->ID, $settings['image_size']);
-            ?>
-            <article>
-                <figure>
-                    <?php if ($item_image): ?>
-                    <img src="<?= $item_image ?>" alt="<?= $item->post_title ?>">
-                    <?php endif; ?>
-                </figure>
-                <div>
-                    <?= $item->post_title ?>
+        <section class="cca-filtered-grid-filters">
+            <div class="cca-filtered-grid-filters__filter cca-filtered-grid-filters__filter--is-active"
+                 data-filter="*">
+                <?= __('All', Language::TEXT_DOMAIN) ?>
+            </div>
+            <?php foreach ($filters as $filter): ?>
+                <div class="cca-filtered-grid-filters__filter"
+                     data-filter=".<?= $filter->slug ?>">
+                    <?= $filter->name ?>
                 </div>
-                <div>
-                    <?= $item->post_content ?>
+            <?php endforeach; ?>
+        </section>
+        <section <?= $this->get_render_attribute_string('wrapper'); ?>>
+            <?php foreach ($items as $item):
+                //$fields = get_fields($item->ID);
+                $terms = get_the_terms($item->ID, 'cat_portfolio');
+                $caterories = implode(' ', array_column($terms, 'slug'));
+                $item_image = get_the_post_thumbnail_url($item->ID, $settings['image_size']);
+                ?>
+            <article class="cca-filtered-grid__item <?= $caterories ?>">
+                <a href="<?= get_permalink($item->ID) ?>">
+                    <figure class="cca-filtered-grid__image">
+                        <?php if ($item_image): ?>
+                        <img src="<?= $item_image ?>" alt="<?= $item->post_title ?>" loading="lazy">
+                        <?php endif; ?>
+                    </figure>
+                </a>
+                <div class="cca-filtered-grid__contents">
+                    <h2 class="cca-filtered-grid__title">
+                        <?= wp_trim_words($item->post_title, 5) ?>
+                    </h2>
+                    <div class="cca-filtered-grid__description">
+                        <?= wp_trim_words(get_the_excerpt($item->ID), 15) ?>
+                    </div>
                 </div>
             </article>
             <?php endforeach; ?>
+            <?php if (!count($items)): ?>
+            <div class="cca-filtered-grid__no-results">
+                <?= __('There are no results', Language::TEXT_DOMAIN) ?>
+            </div>
+            <?php endif; ?>
         </section>
         <?php
     }
