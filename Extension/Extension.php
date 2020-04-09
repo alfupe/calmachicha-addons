@@ -40,6 +40,7 @@ class Extension {
     public function register_widgets() {
         Plugin::instance()->widgets_manager->register_widget_type(new Widgets\PostGrid());
         Plugin::instance()->widgets_manager->register_widget_type(new Widgets\FilteredGrid());
+        Plugin::instance()->widgets_manager->register_widget_type(new Widgets\PostTerms());
     }
 }
 
