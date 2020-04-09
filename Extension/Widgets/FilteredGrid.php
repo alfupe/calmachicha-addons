@@ -76,6 +76,18 @@ class FilteredGrid extends Widget_Base {
         return array_combine($image_sizes, $image_sizes);
     }
 
+    private function get_taxonomies() {
+        $post_type = $this->get_controls_settings()['post_type'];
+        $taxonomies_objects = get_object_taxonomies($post_type, 'object');
+        $taxonomies = [];
+
+        foreach($taxonomies_objects as $taxonomy) {
+            $taxonomies[$taxonomy->name] = $taxonomy->label;
+        }
+
+        return $taxonomies;
+    }
+
     protected function _register_controls() {
         // Content tab
         $this->grid_options_section();
@@ -91,7 +103,6 @@ class FilteredGrid extends Widget_Base {
             ]
         );
 
-        // Post type
         $this->add_control(
             'post_type',
             [
@@ -102,34 +113,22 @@ class FilteredGrid extends Widget_Base {
             ]
         );
 
-        $this->add_responsive_control(
-            'grid_columns',
+        $this->add_control(
+            'taxonomy_offset',
             [
-                'type' => Controls_Manager::SELECT,
-                'label' => __('Columns', Language::TEXT_DOMAIN),
-                'desktop_default' => 3,
-                'tablet_default' => 2,
-                'mobile_default' => 1,
-                'options' => [
-                    1 => 1,
-                    2 => 2,
-                    3 => 3,
-                    4 => 4,
-                    5 => 5,
-                ],
-                'selectors' => [
-                    '{{WRAPPER}} .cca-post-grid' => 'grid-template-columns: repeat({{VALUE}}, 1fr);',
-                ]
+                'type' => Controls_Manager::NUMBER,
+                'label' => __('Taxonomy offset', Language::TEXT_DOMAIN),
+                'default' => 0
             ]
         );
 
         $this->add_control(
             'image_size',
             [
-                'label' => __('Image size', Language::TEXT_DOMAIN),
                 'type' => Controls_Manager::SELECT,
+                'label' => __('Image size', Language::TEXT_DOMAIN),
                 'options' => $this->get_image_sizes(),
-                'default' => 'post-thumbnail',
+                'default' => 'thumbnail',
             ]
         );
 
@@ -170,6 +169,7 @@ class FilteredGrid extends Widget_Base {
 
     protected function render() {
         $settings = $this->get_settings_for_display();
+
         $items = get_posts([
             'post_type' => $settings['post_type']
         ]);
@@ -179,27 +179,35 @@ class FilteredGrid extends Widget_Base {
                 'class' => ['cca-filtered-grid', $settings['_css_classes']]
             ]
         );
-        $filters = get_terms([
-            'taxonomy' => 'cat_portfolio',
-            'hide_empty' => false
-        ]);
+        //$taxonomy_offset = isset($settings['taxonomy']) ? array_search($settings['taxonomy'], array_keys($this->get_taxonomies())) : 0;
+        $taxonomy = array_keys($this->get_taxonomies())[$settings['taxonomy_offset']];
+        //var_dump($settings);
         ?>
         <section class="cca-filtered-grid-filters">
             <div class="cca-filtered-grid-filters__filter cca-filtered-grid-filters__filter--is-active"
                  data-filter="*">
                 <?= __('All', Language::TEXT_DOMAIN) ?>
             </div>
-            <?php foreach ($filters as $filter): ?>
-                <div class="cca-filtered-grid-filters__filter"
-                     data-filter=".<?= $filter->slug ?>">
-                    <?= $filter->name ?>
-                </div>
-            <?php endforeach; ?>
+            <?php
+                if (isset($taxonomy)):
+                    $filters = get_terms([
+                        'taxonomy' => $taxonomy,
+                        'hide_empty' => false
+                    ]);
+                    foreach ($filters as $filter): ?>
+                    <div class="cca-filtered-grid-filters__filter"
+                         data-filter=".<?= $filter->slug ?>">
+                        <?= $filter->name ?>
+                    </div>
+                <?php
+                    endforeach;
+                endif;
+            ?>
         </section>
         <section <?= $this->get_render_attribute_string('wrapper'); ?>>
             <?php foreach ($items as $item):
                 //$fields = get_fields($item->ID);
-                $terms = get_the_terms($item->ID, 'cat_portfolio');
+                $terms = get_the_terms($item->ID, $taxonomy);
                 $caterories = implode(' ', array_column($terms, 'slug'));
                 $item_image = get_the_post_thumbnail_url($item->ID, $settings['image_size']);
                 ?>
