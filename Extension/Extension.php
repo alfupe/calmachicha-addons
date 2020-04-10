@@ -41,6 +41,7 @@ class Extension {
         Plugin::instance()->widgets_manager->register_widget_type(new Widgets\PostGrid());
         Plugin::instance()->widgets_manager->register_widget_type(new Widgets\FilteredGrid());
         Plugin::instance()->widgets_manager->register_widget_type(new Widgets\PostTerms());
+        Plugin::instance()->widgets_manager->register_widget_type(new Widgets\PostSlider());
     }
 }
 

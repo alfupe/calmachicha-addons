@@ -1,0 +1,126 @@
+/*= SWIPER GLOBAL =*/
+.swiper-container {
+
+}
+
+.swiper-wrapper {
+
+}
+
+.swiper-slide {
+
+}
+
+.swiper-pagination {
+
+}
+
+.swiper-button-next {
+
+}
+
+.swiper-button-prev {
+
+}
+/*= FIN SWIPER GLOBAL =*/
+
+/*= PROJECTS SLIDER =*/
+.post-slider {
+
+}
+
+.post-slider__no-results {
+
+}
+
+.post-slider--swiper {
+
+}
+
+.post-slider--swiper.swiper-container {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.post-slider .swiper-button-prev,
+.post-slider .swiper-button-next {
+    background-image: url(../img/prev-arrow.svg);
+    width: 25px;
+}
+
+.post-slider .swiper-button-prev {
+    left: -50px;
+    right: auto;
+}
+
+.post-slider .swiper-button-next {
+    right: -50px;
+    left: auto;
+    transform: rotate(180deg);
+}
+
+.post-slider .slide-post {
+}
+
+.post-slider .slide-post__figure {
+    height: 365px;
+    overflow: hidden;
+}
+
+.post-slider .slide-post__figure img {
+    width: 100%;
+    height: 100% !important;
+    object-fit: cover;
+    max-width: initial;
+    display: block;
+    transition: all 1s linear;
+}
+
+.post-slider .slide-post__figure:hover img {
+    height: 120% !important;
+    transition: all 4s linear;
+}
+
+.post-slider .slide-post__figure::before {
+    content: "";
+    background-color: rgba(0, 0, 0, 0.3);
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    transition: background-color 0.15s ease;
+}
+
+.post-slider .slide-post__figure:hover::before {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.post-slider .slide-post__captions {
+    font-style: normal;
+    position: absolute;
+    z-index: 1;
+    left: 20px;
+    top: 30px;
+    right: 20px;
+    bottom: 30px;
+}
+
+.post-slider .slide-post__name {
+    font-family: Montserrat, sans-serif;
+    font-weight: 500;
+    font-size: 35px;
+    color: white;
+    letter-spacing: -2px;
+    line-height: 1;
+    margin-bottom: 15px;
+}
+
+.post-slider .slide-post__excerpt {
+    font-family: Lato, sans-serif;
+    font-size: 16px;
+    color: white;
+    font-weight: 300;
+}
+
+/*= FIN PROJECTS SLIDER =*/

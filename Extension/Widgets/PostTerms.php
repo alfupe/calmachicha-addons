@@ -82,9 +82,7 @@ class PostTerms extends Widget_Base {
         );
     ?>
         <section <?= $this->get_render_attribute_string('wrapper'); ?>>
-            <?php
-            foreach ($terms as $term):
-            ?>
+            <?php foreach ($terms as $term): ?>
             <div>
                 <a href="<?= get_term_link($term->term_id) ?>"><?= $term->name ?></a>
             </div>

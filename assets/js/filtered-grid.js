@@ -9,7 +9,7 @@ class FilteredGridHandlerClass extends elementorModules.frontend.handlers.Base {
         const gutter = this.getElementSettings('gutter');
         const container = document.querySelector('.cca-filtered-grid');
         container.style.setProperty('--gutter', `${gutter.size}${gutter.unit}`);
-        console.log('gutter', gutter);
+
         const $grid = $container.isotope({
             itemSelector: '.cca-filtered-grid__item',
             layoutMode: 'masonry',
